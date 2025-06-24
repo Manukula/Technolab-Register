@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<style>
+  /* Top-right menu bar */
+  .menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 2%;
+    background-color: transparent;
+    padding: 5px 10px;
+    z-index: 1000;
+  }
+
+  .menu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+
+  .menu ul li a {
+    text-decoration: none;
+    color: black;
+    font-size: 10px;
+  }
+
+  .menu ul li a:hover {
+    color: #555;
+  }
+
+  /* Ensure content below doesn't hide under fixed menu */
+  .wrapper {
+    margin-top: 70px; /* Adjust based on menu height */
+  }
+</style>
+
+<body>
+
+<section class="menu">
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="https://docs.google.com/spreadsheets/d/1hfNIcuMO2qq3du8aXHzykQ9wkYK1-d9PyXoytLAIAf8/edit?gid=0#gid=0" onclick="handleDownload(event)">Download</a></li>
+
+  </ul>
+</section>
+
+<!-- BB8 Toggle Button -->
+<label class="bb8-toggle">
+    <input class="bb8-toggle__checkbox" type="checkbox">
+    <div class="bb8-toggle__container">
+      <div class="bb8-toggle__scenery">
+        <div class="tatto-2"></div>
+        <div class="gomrassen"></div>
+        <div class="hermes"></div>
+        <div class="chenini"></div>
+        <div class="bb8-toggle__cloud"></div>
+        <div class="bb8-toggle__cloud"></div>
+        <div class="bb8-toggle__cloud"></div>
+      </div>
+      <div class="bb8">
+        <div class="bb8__head-container">
+          <div class="bb8__head"></div>
+        </div>
+        <div class="bb8__body"></div>
+      </div>
+      <div class="artificial__hidden">
+        <div class="bb8__shadow"></div>
+      </div>
+    </div>
+</label>
+
+<div class="wrapper">
+  <form name="submit-to-google-sheet" style="position: relative; padding-top: 70px;">
+    <img src="Inkcubeko.jpg" alt="Inkcubeko Logo" class="form-logo">
+    <label>name:</label><br><br>
+    <input type="text" name="name" required><br><br>
+    <label>surname:</label><br><br>
+    <input type="text" name="surname" required>
+    <br><br>
+    <label for="age">Age:</label>
+    <select name="age" required>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+      <option value="24">24</option>
+      <option value="25">25</option>
+    </select><br><br>
+
+    <label>reason:</label><br><br>
+    <select name="reason" id="reason" required>
+      <option value="Reaserch">Research</option>
+      <option value="Application">Application</option>
+      <option value="Resume/CV">Resume/CV</option>
+      <option value="copy">Copy</option>
+      <option value="Computer Practise">Computer Practise</option>
+      <option value="Other">system support</option>
+      <option value="Other">ICDL</option>
+      <option value="Other">D - Labs</option>
+      <option value="Other">CAT</option>
+    </select><br><br>  
+
+    <div id="extra-fields" style="display:none;">
+      <label for="phone">Phone Number:</label><br>
+      <input type="tel" id="phone" name="phone"><br><br>
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email"><br><br>
+    </div>
+
+    <label for="date">Date:</label><br><br>
+    <input type="date" id="date" name="date" required readonly><br><br>
+    
+    <label>Gender:</label><br><br>
+    <input type="radio" required name="gender" value="male"> <label>male</label>
+    <input type="radio" name="gender" value="female"> <label>female</label>
+    <br><br>
+    <!-- Remove the submit button, BB8 toggle will submit -->
+  </form>
+</div>
+
+<!-- Display current time -->
+<div id="time" style="margin-top:20px;font-weight:bold;"></div>
+
+<footer class="site-footer">
+  &copy; Inkcubeko Youth and Science Centre
+</footer>
+
+
+
+<script>
+
+
+  // Set the date input to the current date and lock it
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+  });
+
+  // Google Script URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycby6pLDYGGV8SFdXBPhYULZytH7_RzXETd1zDL7qy8hoONPIU3TKg2x9xmWGseWV9XZ1/exec';
+  const form = document.forms['submit-to-google-sheet'];
+
+  // Show phone and email fields if "Application" is selected
+  document.getElementById('reason').addEventListener('change', function() {
+    const extraFields = document.getElementById('extra-fields');
+    if (this.value === 'Application') {
+      extraFields.style.display = '';
+      document.getElementById('phone').setAttribute('required', 'required');
+      document.getElementById('email').setAttribute('required', 'required');
+    } else {
+      extraFields.style.display = 'none';
+      document.getElementById('phone').removeAttribute('required');
+      document.getElementById('email').removeAttribute('required');
+    }
+  });
+
+  // BB8 toggle acts as submit button
+  const toggle = document.querySelector('.bb8-toggle__checkbox');
+  if (toggle) {
+    toggle.addEventListener('change', function(e) {
+      e.preventDefault();
+      if (form.checkValidity()) {
+        form.requestSubmit();
+        setTimeout(() => { toggle.checked = false; }, 100);
+      } else {
+        toggle.checked = false;
+      }
+    });
+  }
+
+  // Form submit logic
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+      .then(response => {
+        console.log('Success!', response);
+        form.reset();
+        // Reset date to today after form reset
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        changeBackground();
+        updateDateTime();
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+        changeBackground();
+        updateDateTime();
+      });
+  });
+
+  // Change background color
+  function changeBackground() {
+    const randomColor = getRandomColor();
+    document.body.style.backgroundColor = randomColor;
+  }
+
+  function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  // Update the HTML element with the current time and date
+  function updateDateTime() {
+    var now = new Date();
+    var dateTime = now.toLocaleString();
+    document.getElementById("time").innerHTML = dateTime;
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000); // Update every second
+
+  // Auto-submit the form once all required fields are filled
+  function checkAndAutoSubmit() {
+    if (form.checkValidity()) {
+      form.requestSubmit();
+    }
+  }
+  const requiredFields = form.querySelectorAll('[required]');
+  requiredFields.forEach(field => {
+    field.addEventListener('input', checkAndAutoSubmit);
+    field.addEventListener('change', checkAndAutoSubmit);
+  });
+
+
+function handleDownload(event) {
+  event.preventDefault();
+  const password = prompt("Enter password to access the download:");
+  const correctPassword = "2519"; 
+
+  if (password === correctPassword) {
+    window.location.href = "https://docs.google.com/spreadsheets/d/1hfNIcuMO2qq3du8aXHzykQ9wkYK1-d9PyXoytLAIAf8/edit?gid=0#gid=0";
+  } else if (password !== null) {
+    alert("Incorrect password. Access denied.");
+  }
+}
+
+
+
+</script>
+</body>
+</html>
