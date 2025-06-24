@@ -55,7 +55,7 @@
   </ul>
 </section>
 
-<!-- BB8 Toggle Button -->
+<!-- BB8 Toggle Button
 <label class="bb8-toggle">
     <input class="bb8-toggle__checkbox" type="checkbox">
     <div class="bb8-toggle__container">
@@ -78,7 +78,7 @@
         <div class="bb8__shadow"></div>
       </div>
     </div>
-</label>
+</label> -->
 
 <div class="wrapper">
   <form name="submit-to-google-sheet" style="position: relative; padding-top: 70px;">
@@ -239,18 +239,28 @@
   updateDateTime();
   setInterval(updateDateTime, 1000); // Update every second
 
-  // Auto-submit the form once all required fields are filled
+  let isSubmitting = false;
+
+  // Auto-submit the form once all required fields are filled and valid, but only once at a time
   function checkAndAutoSubmit() {
-    if (form.checkValidity()) {
+    if (!isSubmitting && form.checkValidity()) {
+      isSubmitting = true;
       form.requestSubmit();
     }
   }
+
   const requiredFields = form.querySelectorAll('[required]');
   requiredFields.forEach(field => {
     field.addEventListener('input', checkAndAutoSubmit);
     field.addEventListener('change', checkAndAutoSubmit);
   });
 
+  // Reset isSubmitting after form submission completes
+  form.addEventListener('submit', function(e) {
+    setTimeout(() => {
+      isSubmitting = false;
+    }, 1000); // Adjust timeout if needed
+  });
 
 function handleDownload(event) {
   event.preventDefault();
