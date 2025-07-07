@@ -51,34 +51,8 @@
   <ul>
     <li><a href="#">Home</a></li>
     <li><a href="https://docs.google.com/spreadsheets/d/1hfNIcuMO2qq3du8aXHzykQ9wkYK1-d9PyXoytLAIAf8/edit?gid=0#gid=0" onclick="handleDownload(event)">Download</a></li>
-
   </ul>
 </section>
-
-<!-- BB8 Toggle Button -->
-<label class="bb8-toggle">
-    <input class="bb8-toggle__checkbox" type="checkbox">
-    <div class="bb8-toggle__container">
-      <div class="bb8-toggle__scenery">
-        <div class="tatto-2"></div>
-        <div class="gomrassen"></div>
-        <div class="hermes"></div>
-        <div class="chenini"></div>
-        <div class="bb8-toggle__cloud"></div>
-        <div class="bb8-toggle__cloud"></div>
-        <div class="bb8-toggle__cloud"></div>
-      </div>
-      <div class="bb8">
-        <div class="bb8__head-container">
-          <div class="bb8__head"></div>
-        </div>
-        <div class="bb8__body"></div>
-      </div>
-      <div class="artificial__hidden">
-        <div class="bb8__shadow"></div>
-      </div>
-    </div>
-</label>
 
 <div class="wrapper">
   <form name="submit-to-google-sheet" style="position: relative; padding-top: 70px;">
@@ -113,6 +87,7 @@
 
     <label>reason:</label><br><br>
     <select name="reason" id="reason" required>
+      <option value=""></option>
       <option value="Reaserch">Research</option>
       <option value="Application">Application</option>
       <option value="Resume/CV">Resume/CV</option>
@@ -121,13 +96,13 @@
       <option value="Other">system support</option>
       <option value="Other">ICDL</option>
       <option value="Other">D - Labs</option>
-      <option value="Other">CAT</option>
+      <option value="Other">CAT</option>    
     </select><br><br>  
 
     <div id="extra-fields" style="display:none;">
-      <label for="phone">Phone Number:</label><br>
+      <label for="phone">Phone Number</label><br>
       <input type="tel" id="phone" name="phone"><br><br>
-      <label for="email">Email:</label><br>
+      <label for="email">Email</label><br>
       <input type="email" id="email" name="email"><br><br>
     </div>
 
@@ -137,8 +112,12 @@
     <label>Gender:</label><br><br>
     <input type="radio" required name="gender" value="male"> <label>male</label>
     <input type="radio" name="gender" value="female"> <label>female</label>
+
+    <label for="capture-time">Time Captured:</label><br><br>
+    <input type="time" id="capture-time" name="capture-time" readonly><br><br>
     <br><br>
-    <!-- Remove the submit button, BB8 toggle will submit -->
+    <!-- Submit button added below -->
+    <input type="submit" value="Submit">
   </form>
 </div>
 
@@ -149,11 +128,7 @@
   &copy; Inkcubeko Youth and Science Centre
 </footer>
 
-
-
 <script>
-
-
   // Set the date input to the current date and lock it
   document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('date');
@@ -179,23 +154,32 @@
     }
   });
 
-  // BB8 toggle acts as submit button
-  const toggle = document.querySelector('.bb8-toggle__checkbox');
-  if (toggle) {
-    toggle.addEventListener('change', function(e) {
-      e.preventDefault();
-      if (form.checkValidity()) {
-        form.requestSubmit();
-        setTimeout(() => { toggle.checked = false; }, 100);
-      } else {
-        toggle.checked = false;
-      }
-    });
+  // Add this before form.addEventListener('submit', ...)
+  const timeInput = document.createElement('input');
+  timeInput.type = 'hidden';
+  timeInput.name = 'time';
+  timeInput.id = 'time-input';
+  form.appendChild(timeInput);
+
+  // Update the hidden time input with the current time
+  function updateTimeInput() {
+    const now = new Date();
+    timeInput.value = now.toLocaleTimeString();
   }
+
+  // Update time input every second (optional, or just before submit)
+  setInterval(updateTimeInput, 1000);
+
+  // Update time input just before submit
+  form.addEventListener('submit', function() {
+    updateTimeInput();
+  });
 
   // Form submit logic
   form.addEventListener('submit', e => {
     e.preventDefault();
+    const submitBtn = form.querySelector('input[type="submit"]');
+    submitBtn.style.display = 'none'; // Hide the button
 
     fetch(scriptURL, { method: 'POST', body: new FormData(form)})
       .then(response => {
@@ -207,11 +191,17 @@
         dateInput.value = today;
         changeBackground();
         updateDateTime();
+        setTimeout(() => {
+          submitBtn.style.display = ''; // Show the button after 3 seconds
+        }, 3000);
       })
       .catch(error => {
         console.error('Error!', error.message);
         changeBackground();
         updateDateTime();
+        setTimeout(() => {
+          submitBtn.style.display = ''; // Show the button after 3 seconds even on error
+        }, 3000);
       });
   });
 
@@ -239,33 +229,18 @@
   updateDateTime();
   setInterval(updateDateTime, 1000); // Update every second
 
-  // Auto-submit the form once all required fields are filled
-  function checkAndAutoSubmit() {
-    if (form.checkValidity()) {
-      form.requestSubmit();
+  // Download password protection
+  function handleDownload(event) {
+    event.preventDefault();
+    const password = prompt("Enter password to access the download:");
+    const correctPassword = "2519"; 
+
+    if (password === correctPassword) {
+      window.location.href = "https://docs.google.com/spreadsheets/d/1hfNIcuMO2qq3du8aXHzykQ9wkYK1-d9PyXoytLAIAf8/edit?gid=0#gid=0";
+    } else if (password !== null) {
+      alert("Incorrect password. Access denied.");
     }
   }
-  const requiredFields = form.querySelectorAll('[required]');
-  requiredFields.forEach(field => {
-    field.addEventListener('input', checkAndAutoSubmit);
-    field.addEventListener('change', checkAndAutoSubmit);
-  });
-
-
-function handleDownload(event) {
-  event.preventDefault();
-  const password = prompt("Enter password to access the download:");
-  const correctPassword = "2519"; 
-
-  if (password === correctPassword) {
-    window.location.href = "https://docs.google.com/spreadsheets/d/1hfNIcuMO2qq3du8aXHzykQ9wkYK1-d9PyXoytLAIAf8/edit?gid=0#gid=0";
-  } else if (password !== null) {
-    alert("Incorrect password. Access denied.");
-  }
-}
-
-
-
 </script>
 </body>
 </html>
